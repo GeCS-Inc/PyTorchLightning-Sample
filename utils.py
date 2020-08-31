@@ -21,6 +21,8 @@ class EasyDict(dict):
 def plot_dataset(dataset, size=384, row=2, col=4, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
     preview = np.zeros((row*size, col*size, 3), dtype='uint8')
     for i, (img, _) in enumerate(dataset):
+        if i >= row * col:
+            break
         img = img.numpy()
         img = np.transpose(img, (1, 2, 0))
         img = (img * std + mean) * 255
