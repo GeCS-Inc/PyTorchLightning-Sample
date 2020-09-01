@@ -12,7 +12,7 @@ env = EasyDict(
     dataset="custom",  # ["custom"]
     dataset_root="./dataset/",  # "custom" のデータセットの読み込み元
     dataset_download="./external_dataset/",  # image_net 等データセットのダウンロード先
-    num_class=2,
+    num_class=3,
     # 学習関連
     batch_size=32,
     learning_rate=1e-3,

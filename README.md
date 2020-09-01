@@ -5,6 +5,7 @@
 - Python: 3.6
 - PyTorch: 1.5
 - PyTorch-Lightning: 0.9
+- OpenCV 4.2.0
 
 ## Training
 
@@ -60,3 +61,12 @@ $ python3 train.py
 ```sh
 $ python3 inference.py
 ```
+
+## Issue
+
+```
+CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)` (createCublasHandle at /opt/conda/conda-bld/pytorch_1591914838379/work/aten/src/ATen/cuda/CublasHandlePool.cpp:8)
+TypeError: 'NoneType' object is not iterable
+```
+
+`num_class` が間違っている可能性があります。
