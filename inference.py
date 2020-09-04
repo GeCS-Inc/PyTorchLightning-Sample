@@ -1,13 +1,15 @@
 import model
 import train
+import os
+import numpy as np
 from PIL import Image
-
+from glob import glob
 from pytorch_lightning import seed_everything
 
 env = train.env
 transform = train.transform
 
-IMAGE_PATH = "./dataset/cat/1200px-Cat03.jpg"
+IMAGE_DIR = "./dataset/dog/"
 PRETRAINED = "lightning_logs/version_10/checkpoints/epoch=1.ckpt"
 
 if __name__ == "__main__":
@@ -15,11 +17,15 @@ if __name__ == "__main__":
 
     model = model.FineTuningModel.load_from_checkpoint(PRETRAINED)
     model.eval()
+    img_paths = glob(os.path.join(IMAGE_DIR, "*.png")) + \
+        glob(os.path.join(IMAGE_DIR, "*.jpg")) + \
+        glob(os.path.join(IMAGE_DIR, "*.jpeg"))
 
-    img = Image.open(IMAGE_PATH)
-    img = transform(img)
-    img = img.unsqueeze(0)
+    for path in img_paths:
+        img = Image.open(path)
+        img = transform(img)
+        img = img.unsqueeze(0)
 
-    output = model(img).squeeze(0)
-    print(
-        '\n'.join([f"{i}: {v}" for i, v in enumerate(output.detach().numpy())]))
+        output = model(img).squeeze(0).detach().numpy()
+        idx = np.argmax(output)
+        print(f"{os.path.basename(path)}: {idx} [{output[idx]}]")
