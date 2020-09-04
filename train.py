@@ -16,6 +16,7 @@ env = EasyDict(
     # 学習関連
     batch_size=32,
     learning_rate=1e-3,
+    dropout_rate=0.2
 )
 transform = transforms.Compose([transforms.Resize(400),
                                 transforms.RandomCrop(384),

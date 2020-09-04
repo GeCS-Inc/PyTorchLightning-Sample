@@ -1,3 +1,5 @@
+from utils import EasyDict
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,20 +10,30 @@ from pytorch_lightning.core import LightningModule
 import torchvision.models as models
 from efficientnet_pytorch import EfficientNet
 
+MODELS = [
+    "vgg16", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "resnet101_v2",
+    'efficientnet-b0', 'efficientnet-b1', 'efficientnet-b2', 'efficientnet-b3',
+    'efficientnet-b4', 'efficientnet-b5', 'efficientnet-b6', 'efficientnet-b7',
+    'efficientnet-b8'
+]
+
 
 class FineTuningModel(LightningModule):
 
-    def __init__(self, env, dropout_rate=0.2):
+    def __init__(self, env):
         super().__init__()
+        self.save_hyperparameters()
+
+        if env == {}:
+            # save.hyperparameters()を行っていなかったため
+            from train import env
+
+        if type(env) == dict:
+            env = EasyDict(env)
 
         self.env = env
 
-        assert env.base_model in [
-            "vgg16", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "resnet101_v2",
-            'efficientnet-b0', 'efficientnet-b1', 'efficientnet-b2', 'efficientnet-b3',
-            'efficientnet-b4', 'efficientnet-b5', 'efficientnet-b6', 'efficientnet-b7',
-            'efficientnet-b8'
-        ]
+        assert env.base_model in MODELS
 
         if env.base_model == "vgg16":
             self.model = models.vgg16(pretrained=True)
@@ -40,7 +52,7 @@ class FineTuningModel(LightningModule):
             fc_in_features = self._model._fc.in_features
             self.model = self._model.extract_features
 
-        self.dropout = nn.Dropout(dropout_rate)
+        self.dropout = nn.Dropout(env.dropout_rate)
         self.fc = nn.Linear(fc_in_features, env.num_class)
         self.softmax = nn.Softmax(dim=1)
 
