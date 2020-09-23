@@ -58,12 +58,16 @@ class FineTuningModel(LightningModule):
 
     def forward(self, x):
         x = self.model(x)
+        x = self.swish(x)
         x = F.adaptive_avg_pool2d(x, (1, 1))
         x = torch.flatten(x, 1)
         x = self.dropout(x)
         x = self.fc(x)
         x = self.softmax(x)
         return x
+
+    def swish(self, x):
+        return x * torch.sigmoid(x)
 
     def training_step(self, batch, batch_idx):
         # forward pass
